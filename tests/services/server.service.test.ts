@@ -1,5 +1,5 @@
 import type { LobbyRow, MembershipRow, ServerRow } from '../../src/db/schema';
-import { NotFoundError } from '../../src/errors/AppError';
+import { NotFoundError, ValidationError } from '../../src/errors/AppError';
 import type { LobbyRepo } from '../../src/repos/lobby.repo';
 import type { MembershipRepo } from '../../src/repos/membership.repo';
 import type { JoinResult, ServerRepo } from '../../src/repos/server.repo';
@@ -70,8 +70,14 @@ function makeService(opts: {
 }
 
 describe('ServerService.createServer', () => {
-  // Even/positive enforcement now lives in createServerBodySchema (request layer);
-  // see tests/dtos/server.dto.test.ts. The service trusts validated input.
+  it('rejects an odd requiredPlayers with ValidationError', async () => {
+    const { service, serverRepo } = makeService({});
+    await expect(service.createServer(user, { name: 'X', requiredPlayers: 5 })).rejects.toThrow(
+      ValidationError,
+    );
+    expect(serverRepo.createWithLobby).not.toHaveBeenCalled();
+  });
+
   it('creates a bomb_defusal server with a lobby and returns DTOs', async () => {
     const { service, serverRepo } = makeService({
       createResult: { server: serverRow(), lobby: lobbyRow() },

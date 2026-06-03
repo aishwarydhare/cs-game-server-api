@@ -13,8 +13,6 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "ts-node src/db/migrate.ts",
-    "db:up": "docker compose up -d db",
-    "db:down": "docker compose down",
     "test": "jest --selectProjects unit",
     "test:repo": "jest --selectProjects repo --runInBand",
     "test:all": "jest --runInBand",

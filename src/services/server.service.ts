@@ -6,7 +6,8 @@ import {
   toMembershipDTO,
   toServerDTO,
 } from '../dtos/server.dto';
-import { ConflictError, NotFoundError } from '../errors/AppError';
+import { ConflictError, NotFoundError, ValidationError } from '../errors/AppError';
+import { isPositiveEven } from '../helpers/validation';
 import type { AuthUser } from '../middleware/auth';
 import type { LobbyRepo } from '../repos/lobby.repo';
 import type { MembershipRepo } from '../repos/membership.repo';
@@ -41,6 +42,10 @@ export class ServerService {
     user: AuthUser,
     input: { name: string; requiredPlayers: number },
   ): Promise<CreateServerResponse> {
+    if (!isPositiveEven(input.requiredPlayers)) {
+      throw new ValidationError('requiredPlayers must be a positive even number');
+    }
+
     const { server, lobby } = await this.serverRepo.createWithLobby({
       name: input.name,
       requiredPlayers: input.requiredPlayers,

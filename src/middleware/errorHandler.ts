@@ -1,9 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../errors/AppError';
-import { failure } from '../helpers/apiResponse';
 
 export function notFoundHandler(_req: Request, res: Response): void {
-  res.status(404).json(failure('NOT_FOUND', 'Route not found'));
+  res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,11 +17,15 @@ export function errorHandler(
   }
 
   if (err instanceof AppError) {
-    res.status(err.status).json(failure(err.code, err.message, err.details ?? null));
+    res.status(err.status).json({
+      error: { code: err.code, message: err.message, details: err.details },
+    });
     return;
   }
 
   // eslint-disable-next-line no-console
   console.error('Unhandled error', err);
-  res.status(500).json(failure('INTERNAL_SERVER_ERROR', 'An unexpected error occurred'));
+  res.status(500).json({
+    error: { code: 'INTERNAL_SERVER_ERROR', message: 'An unexpected error occurred' },
+  });
 }

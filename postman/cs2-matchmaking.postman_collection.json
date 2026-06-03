@@ -35,9 +35,8 @@
             "exec": [
               "pm.test('201 Created', () => pm.response.to.have.status(201));",
               "const body = pm.response.json();",
-              "pm.test('ok envelope', () => pm.expect(body.ok).to.eql(true));",
-              "pm.collectionVariables.set('serverId', body.data.server.id);",
-              "pm.test('has lobby', () => pm.expect(body.data.lobby.serverId).to.eql(body.data.server.id));"
+              "pm.collectionVariables.set('serverId', body.server.id);",
+              "pm.test('has lobby', () => pm.expect(body.lobby.serverId).to.eql(body.server.id));"
             ]
           }
         }
@@ -95,7 +94,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('409 Conflict', () => pm.response.to.have.status(409));",
-              "pm.test('mismatch code', () => pm.expect(pm.response.json().errorCode).to.eql('IDEMPOTENCY_KEY_MISMATCH'));"
+              "pm.test('mismatch code', () => pm.expect(pm.response.json().error.code).to.eql('IDEMPOTENCY_KEY_MISMATCH'));"
             ]
           }
         }
@@ -150,7 +149,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('200 OK', () => pm.response.to.have.status(200));",
-              "pm.test('returns servers array', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+              "pm.test('returns servers array', () => pm.expect(pm.response.json().servers).to.be.an('array'));"
             ]
           }
         }
@@ -173,7 +172,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('200 OK', () => pm.response.to.have.status(200));",
-              "pm.test('member count present', () => pm.expect(pm.response.json().data).to.have.property('memberCount'));"
+              "pm.test('member count present', () => pm.expect(pm.response.json()).to.have.property('memberCount'));"
             ]
           }
         }
@@ -225,7 +224,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('409 Conflict', () => pm.response.to.have.status(409));",
-              "pm.test('already joined code', () => pm.expect(pm.response.json().errorCode).to.eql('ALREADY_JOINED'));"
+              "pm.test('already joined code', () => pm.expect(pm.response.json().error.code).to.eql('ALREADY_JOINED'));"
             ]
           }
         }
