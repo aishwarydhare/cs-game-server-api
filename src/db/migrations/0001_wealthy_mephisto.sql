@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS "servers_status_idx" ON "servers" USING btree ("status");--> statement-breakpoint
+ALTER TABLE "servers" ADD CONSTRAINT "servers_current_le_required" CHECK ("servers"."current_players" <= "servers"."required_players");

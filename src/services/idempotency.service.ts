@@ -25,6 +25,7 @@ export class IdempotencyService {
     const existing = await this.repo.get(userId, key);
     if (!existing) {
       // Extremely rare race: row vanished between claim and read. Treat as new.
+      // todo: when can this happen, check if tests exist for it
       return { type: 'new' };
     }
 

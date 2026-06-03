@@ -1,18 +1,40 @@
 import { sql } from 'drizzle-orm';
-import { integer, pgTable, primaryKey, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
+import {
+  check,
+  index,
+  integer,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  unique,
+  uuid,
+} from 'drizzle-orm/pg-core';
 
-export const servers = pgTable('servers', {
-  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
-  name: text('name').notNull(),
-  gameType: text('game_type').notNull().default('bomb_defusal'),
-  requiredPlayers: integer('required_players').notNull(),
-  currentPlayers: integer('current_players').notNull().default(0),
-  status: text('status', { enum: ['open', 'full', 'closed'] })
-    .notNull()
-    .default('open'),
-  createdBy: text('created_by').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const servers = pgTable(
+  'servers',
+  {
+    id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+    name: text('name').notNull(),
+    gameType: text('game_type').notNull().default('bomb_defusal'),
+    requiredPlayers: integer('required_players').notNull(),
+    currentPlayers: integer('current_players').notNull().default(0),
+    status: text('status', { enum: ['open', 'full', 'closed'] })
+      .notNull()
+      .default('open'),
+    createdBy: text('created_by').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    // GET /servers filters on status='open'; index keeps that lookup cheap.
+    statusIdx: index('servers_status_idx').on(t.status),
+    // Hard backstop on the atomic-join invariant: a seat count can never exceed capacity.
+    capacityCheck: check(
+      'servers_current_le_required',
+      sql`${t.currentPlayers} <= ${t.requiredPlayers}`,
+    ),
+  }),
+);
 
 export const lobbies = pgTable('lobbies', {
   id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),

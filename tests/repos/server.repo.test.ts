@@ -95,7 +95,17 @@ describe('ServerRepo.joinServer', () => {
     expect(await membershipRepo.countByServer(server.id)).toBe(2);
   });
 
-  it('never overfills under high concurrency (no queue)', async () => {
+  // ===========================================================================
+  // CONCURRENCY SAFETY — the core invariant of this service.
+  //
+  // Fires `attempts` joins at a single server *in parallel* (Promise.all, so the
+  // transactions race inside Postgres) and asserts the atomic conditional UPDATE
+  // never lets the seat count exceed capacity — no queue, no app-level lock.
+  //
+  // Run ONLY this test (needs the local Postgres up — see README/`npm run db:up`):
+  //   npm run test:repo -- -t "CONCURRENCY SAFETY"
+  // ===========================================================================
+  it('CONCURRENCY SAFETY: never overfills a server under parallel joins (no queue)', async () => {
     const capacity = 8;
     const attempts = 40;
     const { server } = await makeServer(capacity);

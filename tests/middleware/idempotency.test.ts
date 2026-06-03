@@ -37,7 +37,8 @@ describe('idempotency middleware', () => {
     const service = fakeService({ type: 'new' });
     const res = await request(buildApp(service)).post('/things').send({ a: 1 });
     expect(res.status).toBe(400);
-    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    expect(res.body.ok).toBe(false);
+    expect(res.body.errorCode).toBe('VALIDATION_ERROR');
     expect(service.begin).not.toHaveBeenCalled();
   });
 
@@ -88,7 +89,7 @@ describe('idempotency middleware', () => {
       .send({ a: 2 });
 
     expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('IDEMPOTENCY_KEY_MISMATCH');
+    expect(res.body.errorCode).toBe('IDEMPOTENCY_KEY_MISMATCH');
   });
 
   it('returns 409 while the original request is still in progress', async () => {
@@ -99,7 +100,7 @@ describe('idempotency middleware', () => {
       .send({ a: 1 });
 
     expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('IDEMPOTENCY_REQUEST_IN_PROGRESS');
+    expect(res.body.errorCode).toBe('IDEMPOTENCY_REQUEST_IN_PROGRESS');
   });
 
   it('releases the claim (allows retry) when the handler returns 5xx', async () => {

@@ -29,6 +29,7 @@ export function idempotency(service: IdempotencyService): RequestHandler {
       .begin(userId, key, fingerprint)
       .then((outcome) => {
         switch (outcome.type) {
+          // todo: use enums
           case 'mismatch':
             throw new ConflictError(
               'IDEMPOTENCY_KEY_MISMATCH',

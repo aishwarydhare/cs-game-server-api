@@ -7,7 +7,7 @@ export function testDatabaseUrl(): string {
   return (
     process.env.TEST_DATABASE_URL ??
     process.env.DATABASE_URL ??
-    'postgres://postgres:postgres@localhost:5432/matchmaking_test'
+    'postgres://postgres:postgres@localhost:5433/matchmaking_test'
   );
 }
 

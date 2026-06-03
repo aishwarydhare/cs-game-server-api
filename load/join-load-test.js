@@ -80,7 +80,7 @@ export function setup() {
       headers: jsonHeaders('loadtest-admin', `create-${SEED}-${i}`),
     });
     check(res, { 'server created (201)': (r) => r.status === 201 });
-    serverIds.push(JSON.parse(res.body).server.id);
+    serverIds.push(JSON.parse(res.body).data.server.id);
   }
   return { serverIds };
 }
@@ -111,7 +111,7 @@ export default function (data) {
 
 function safeCode(res) {
   try {
-    return JSON.parse(res.body).error.code;
+    return JSON.parse(res.body).errorCode;
   } catch (_e) {
     return 'UNKNOWN';
   }
@@ -122,7 +122,7 @@ export function teardown(data) {
   const openRes = http.get(`${BASE_URL}/servers`, {
     headers: jsonHeaders('loadtest-admin', `list-${SEED}`),
   });
-  const openIds = new Set(JSON.parse(openRes.body).servers.map((s) => s.id));
+  const openIds = new Set(JSON.parse(openRes.body).data.map((s) => s.id));
 
   for (let i = 0; i < SERVER_COUNT; i++) {
     const serverId = data.serverIds[i];
@@ -134,7 +134,7 @@ export function teardown(data) {
     const res = http.get(`${BASE_URL}/servers/${serverId}`, {
       headers: jsonHeaders('loadtest-admin', `get-${SEED}-${i}`),
     });
-    const detail = JSON.parse(res.body);
+    const detail = JSON.parse(res.body).data;
 
     check(detail, {
       'current_players never exceeds capacity': (d) => d.server.currentPlayers <= capacity,

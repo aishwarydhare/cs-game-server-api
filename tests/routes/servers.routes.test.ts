@@ -35,7 +35,8 @@ describe('servers routes — exception propagation', () => {
     const res = await request(buildApp(service)).get('/servers').set('x-user-id', 'user-1');
 
     expect(res.status).toBe(500);
-    expect(res.body.error.code).toBe('INTERNAL_SERVER_ERROR');
+    expect(res.body.ok).toBe(false);
+    expect(res.body.errorCode).toBe('INTERNAL_SERVER_ERROR');
   });
 
   it('propagates an unexpected service error from POST /servers as 500', async () => {
@@ -63,7 +64,7 @@ describe('servers routes — exception propagation', () => {
       .send({});
 
     expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('SERVER_FULL');
+    expect(res.body.errorCode).toBe('SERVER_FULL');
   });
 
   it('rejects unauthenticated requests with 401 before reaching the service', async () => {

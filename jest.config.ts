@@ -11,6 +11,7 @@ const config: Config = {
         '<rootDir>/tests/services/**/*.test.ts',
         '<rootDir>/tests/middleware/**/*.test.ts',
         '<rootDir>/tests/helpers/**/*.test.ts',
+        '<rootDir>/tests/dtos/**/*.test.ts',
       ],
     },
     {
